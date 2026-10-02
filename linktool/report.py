@@ -219,6 +219,7 @@ def write_home(reports_root, site_root):
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
 <title>Internal link reports</title><style>{CSS}</style></head><body><div class="wrap">
 <h1>Internal link reports</h1><p class="sub">Run a new crawl from the repo's Actions tab → “Crawl a site” → Run workflow.</p>
+<p class="sub"><a href="sitemaps/">Sitemap extracts →</a></p>
 {''.join(rows) or '<div class="empty">No reports yet.</div>'}</div></body></html>"""
     with open(os.path.join(site_root, "index.html"), "w", encoding="utf-8") as f:
         f.write(page)

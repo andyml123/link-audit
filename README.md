@@ -30,6 +30,16 @@ GitHub emails you if a run fails. To get an email on success too: github.com →
 - **Generic anchors** — "click here", "read more", bare URLs in article text.
 - CSV and JSON downloads at the bottom.
 
+## Extracting a sitemap (iPhone)
+
+1. Repo on github.com → **Actions** → **Extract sitemap URLs** → **Run workflow**.
+2. Type either a website (`example.com`) or a sitemap address (`https://example.com/sitemap_index.xml`) and tap **Run workflow**.
+3. When the run goes green (usually under a minute), open `https://andyml123.github.io/link-audit/sitemaps/`. Each site's latest extract is at `/sitemaps/<domain>/`.
+
+For a website it checks robots.txt for Sitemap lines, then the usual locations (sitemap_index.xml, sitemap.xml, wp-sitemap.xml and others), then the home page. Sitemap indexes are followed all the way down; .gz and plain-text sitemaps work. If a sitemap address you give doesn't work, it searches the site instead.
+
+The result page lists every URL with its last-modified date, a filter box, a section picker (by first folder), a **Copy URLs** button (copies whatever the filter shows), and urls.txt / urls.csv downloads. "How the sitemap was found" shows each address checked. The last 5 extracts per site are kept.
+
 ## Settings
 
 Edit the options list in `.github/workflows/crawl.yml` to change the sites in the picker. Command line options in `linktool/run.py`: `--workers` (parallel fetches, default 4), `--delay` (seconds between requests, default 0.25; Crawl-delay overrides both), `--keep` (past reports kept per site, default 6).
