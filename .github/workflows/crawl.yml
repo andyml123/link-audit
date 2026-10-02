@@ -1,0 +1,64 @@
+name: Crawl a site
+
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: "Which site?"
+        type: choice
+        default: littleflowercottage.com
+        options:
+          - littleflowercottage.com
+          - getwellmessages.net
+          - gardeningclever.com
+          - 1st-class-cards.com
+          - other (type it below)
+      other_site:
+        description: "Other site URL (only if you picked 'other')"
+        required: false
+        default: ""
+      max_pages:
+        description: "Page limit (0 = no limit)"
+        required: false
+        default: "0"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: crawl
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: pip install -r requirements.txt
+
+      - name: Crawl and analyse
+        env:
+          PICK: ${{ inputs.site }}
+          OTHER: ${{ inputs.other_site }}
+          MAX: ${{ inputs.max_pages }}
+        run: |
+          if [[ "$PICK" == other* ]]; then SITE="$OTHER"; else SITE="$PICK"; fi
+          if [[ -z "$SITE" ]]; then echo "No site given"; exit 1; fi
+          python -m linktool.run "$SITE" --max-pages "${MAX:-0}" --out docs
+
+      - name: Publish report
+        run: |
+          git config user.name "link-audit-bot"
+          git config user.email "link-audit-bot@users.noreply.github.com"
+          git add docs
+          git commit -m "Link report: ${{ inputs.site }} ${{ inputs.other_site }}" || exit 0
+          git pull --rebase
+          git push
