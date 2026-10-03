@@ -161,18 +161,24 @@ def write_index(out_root):
         with open(os.path.join(sdir, "index.html"), "w", encoding="utf-8") as f:
             f.write(f'<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex">'
                     f'<meta http-equiv="refresh" content="0;url={runs[0]}/"><a href="{runs[0]}/">Latest extract</a>')
-        try:
-            with open(os.path.join(sdir, runs[0], "summary.json"), encoding="utf-8") as f:
-                st = json.load(f)
-        except Exception:
-            st = {}
-        older = " ".join(f'<a href="{esc(host)}/{r}/">{r}</a>' for r in runs[1:6])
-        rows.append(f'<div class="card"><div class="ttl"><a href="{esc(host)}/{runs[0]}/">{esc(host)}</a></div>'
-                    f'<div class="sub">Latest {runs[0]} · {st.get("urls", "?")} URLs · {st.get("files", "?")} sitemap files</div>'
-                    f'{f"<div class=url>Earlier: {older}</div>" if older else ""}</div>')
+        items = []
+        for r in runs:
+            try:
+                with open(os.path.join(sdir, r, "summary.json"), encoding="utf-8") as f:
+                    st = json.load(f)
+            except Exception:
+                st = {}
+            addr = st.get("address", "")
+            path = urlparse(with_scheme(addr)).path if addr else ""
+            what = path if path not in ("", "/") else "Whole site"
+            n = st.get("urls")
+            items.append(f'<li><a href="{esc(host)}/{r}/">{esc(what)}</a>'
+                         f'<span class="d">{f"{n:,} URLs" if isinstance(n, int) else ""} · {esc(r[:10])} {esc(r[11:13])}:{esc(r[13:15])} UTC</span></li>')
+        rows.append(f'<div class="card"><div class="ttl">{esc(host)}</div>'
+                    f'<ul class="list">{"".join(items)}</ul></div>')
     page = f"""<!doctype html><html lang="en-GB"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow">
-<title>Sitemap extracts</title><style>{CSS}</style></head><body><div class="wrap">
+<title>Sitemap extracts</title><style>{CSS}{EXTRA_CSS}</style></head><body><div class="wrap">
 <p class="sub"><a href="../">Internal link reports</a></p>
 <h1>Sitemap extracts</h1><p class="sub">Run a new one from the repo's Actions tab → “Extract sitemap URLs” → Run workflow.</p>
 {''.join(rows) or '<div class="empty">No extracts yet.</div>'}</div></body></html>"""
@@ -184,9 +190,9 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("address", help="a site (example.com) or a sitemap URL")
     ap.add_argument("--out", default="docs")
-    ap.add_argument("--keep", type=int, default=5)
+    ap.add_argument("--keep", type=int, default=20)
     a = ap.parse_args(argv)
-    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H%M")
+    stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H%M%S")
     ex = Extractor().run(a.address)
     site_dir, run_dir = write_result(ex, a.address.strip(), a.out, stamp)
     prune(site_dir, a.keep)

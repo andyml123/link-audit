@@ -38,7 +38,7 @@ GitHub emails you if a run fails. To get an email on success too: github.com →
 
 For a website it checks robots.txt for Sitemap lines, then the usual locations (sitemap_index.xml, sitemap.xml, wp-sitemap.xml and others), then the home page. Sitemap indexes are followed all the way down; .gz and plain-text sitemaps work. If a sitemap address you give doesn't work, it searches the site instead.
 
-The result page lists every URL with its last-modified date, a filter box, a section picker (by first folder), a **Copy URLs** button (copies whatever the filter shows), and urls.txt / urls.csv downloads. "How the sitemap was found" shows each address checked. The last 5 extracts per site are kept.
+The result page lists every URL with its last-modified date, a filter box, a section picker (by first folder), a **Copy URLs** button (copies whatever the filter shows), and urls.txt / urls.csv downloads. "How the sitemap was found" shows each address checked. Every extract is listed separately under its site, by the sitemap address you gave ("Whole site" if you gave just the domain). The last 20 per site are kept.
 
 ## Settings
 
