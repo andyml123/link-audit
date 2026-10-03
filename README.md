@@ -18,7 +18,7 @@ The page types and roles come from rules rather than an AI model, so a run costs
 
 1. Open the repo on github.com in Safari → **Actions** → **Crawl a site** → **Run workflow**.
 2. Pick a site (or choose "other" and type a URL), leave the page limit at 0 for no limit, and tap **Run workflow**.
-3. When the run goes green (about 5–15 minutes for 1,000–2,500 pages), open your Pages site: `https://<your-username>.github.io/<repo-name>/`. Each site's newest report is always at `/reports/<domain>/` — bookmark that.
+3. When the run goes green (about 5–15 minutes for 1,000–2,500 pages), open your Pages site: `https://getwellmessages.net/link-audit/` (andyml123.github.io redirects there, because getwellmessages.net is your GitHub Pages domain). Each site's newest report is always at `/reports/<domain>/` — bookmark that.
 
 GitHub emails you if a run fails. To get an email on success too: github.com → Settings → Notifications → Actions → untick "Only notify for failed workflows".
 
@@ -34,7 +34,7 @@ GitHub emails you if a run fails. To get an email on success too: github.com →
 
 1. Repo on github.com → **Actions** → **Extract sitemap URLs** → **Run workflow**.
 2. Type either a website (`example.com`) or a sitemap address (`https://example.com/sitemap_index.xml`) and tap **Run workflow**.
-3. When the run goes green (usually under a minute), open `https://andyml123.github.io/link-audit/sitemaps/`. Each site's latest extract is at `/sitemaps/<domain>/`.
+3. When the run goes green (usually under a minute), open `https://getwellmessages.net/link-audit/sitemaps/`. Each site's latest extract is at `/sitemaps/<domain>/`.
 
 For a website it checks robots.txt for Sitemap lines, then the usual locations (sitemap_index.xml, sitemap.xml, wp-sitemap.xml and others), then the home page. Sitemap indexes are followed all the way down; .gz and plain-text sitemaps work. If a sitemap address you give doesn't work, it searches the site instead.
 
