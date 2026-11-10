@@ -78,6 +78,14 @@ SIGNOFF = re.compile(
     r"here's to\b|ready to\b[^?]*\?|and that's it|that's it|trust me|the result\?|the best part\?|simple as that|easy as that)",
     re.I,
 )
+# Liturgical and memorial sign-offs are conventional in prayers, eulogies and
+# cards, so they are never counted as slogan closers.
+CONVENTIONAL = re.compile(
+    r"^(?:amen|rest in peace|rip|until we meet again|forever in our hearts|gone but never forgotten|rest easy|"
+    r"in loving memory|we love you|love always|with love|with deepest sympathy|with sympathy|lord, hear our prayer|"
+    r"in jesus'? name|god bless|thank you)\b",
+    re.I,
+)
 VERBISH = re.compile(
     r"\b(?:is|are|was|were|be|been|being|am|do|does|did|has|have|had|can|could|will|would|should|shall|may|might|must|"
     r"get|gets|got|go|goes|keep|keeps|need|needs|make|makes|let|grow|grows|water|check|try|use|add|give|put|take|see|look|"
@@ -132,7 +140,9 @@ def check_block(text, kind="p"):
         if m:
             out.append(("no_one", s, m.group(0)))
         m = SIGNOFF.search(plain)
-        if m:
+        if CONVENTIONAL.search(plain):
+            pass
+        elif m:
             out.append(("closer", s, m.group(0)))
         elif kind == "p" and len(sents) >= 2 and i == len(sents) - 1:
             # Short paragraph-final line with no verb: a slogan fragment
