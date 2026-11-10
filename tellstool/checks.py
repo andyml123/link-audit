@@ -17,10 +17,14 @@ CHECKS = {
     "inflated": "Inflated significance",
     "sales": "Sales words",
     "no_one": "Arguing with no one",
-    "bold_label": "Bold-label lists",
+    "bold_label": "Bold-label lists (review)",
+    "soft_sales": "\"Perfect\" (review)",
     "triad": "Possible forced triad (review)",
 }
-SCORED = [k for k in CHECKS if k != "triad"]
+# Review-only checks are listed but not counted: spec lists, "perfect" and
+# triads are often fine, so they need a human eye rather than a score.
+REVIEW = {"bold_label", "soft_sales", "triad"}
+SCORED = [k for k in CHECKS if k not in REVIEW]
 
 # 1. Not X but Y
 NOT_X_PATTERNS = [
@@ -62,7 +66,7 @@ SALES = re.compile(
 
 # 8. Arguing with no one
 NO_ONE = re.compile(
-    r"^(?:but\s+)?(?:(?:this|that|it)\s+(?:isn't|is not|doesn't|does not|won't)\s+(?:mean|about|perfect|magic|rocket science|hard|as hard|as complicated|complicated|a death sentence)|"
+    r"^(?:but\s+)?(?:(?:this|that|it)\s+(?:isn't|is not|won't be)\s+(?:about|perfect|magic|rocket science|as hard|as complicated|a death sentence)\b|"
     r"none of this means|that's not to say|this is not to say|don't get me wrong|"
     r"(?:it|this|that)\s+(?:isn't|is not)\s+(?:just|only)\b)",
     re.I,
@@ -122,7 +126,8 @@ def check_block(text, kind="p"):
         for m in SALES.finditer(plain):
             if re.search(r"\b(?:not|isn't|aren't|never)\s+(?:\w+\s+)?$", plain[:m.start()], re.I):
                 continue  # "isn't perfect" is a denial, not a sales word
-            out.append(("sales", s, m.group(0).lower()))
+            word = m.group(0).lower()
+            out.append(("soft_sales" if word in ("perfect", "perfectly") else "sales", s, word))
         m = NO_ONE.search(plain)
         if m:
             out.append(("no_one", s, m.group(0)))

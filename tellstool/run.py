@@ -20,7 +20,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from .checks import CHECKS, SCORED, check_block, word_count
+from .checks import CHECKS, REVIEW, SCORED, check_block, word_count
 
 USER_AGENT = "PersonalLinkAudit/1.0 (+private content audit of my own site)"
 
@@ -128,7 +128,7 @@ def audit_post(p, skip_blockquotes):
     for items in bold_lists:
         findings.append(("bold_label", items[0][:200], f"{len(items)} bold-labelled items"))
     counts = collections.Counter(f[0] for f in findings)
-    sales_words = collections.Counter(f[2] for f in findings if f[0] == "sales")
+    sales_words = collections.Counter(f[2] for f in findings if f[0] in ("sales", "soft_sales"))
     tells = sum(counts[k] for k in SCORED)
     title = html.unescape(BeautifulSoup(p["title"]["rendered"], "lxml").get_text())
     return {
@@ -141,6 +141,7 @@ def audit_post(p, skip_blockquotes):
         "tells": tells,
         "per_1k": round(tells * 1000 / words, 1) if words else 0,
         "triads": counts["triad"],
+        "review": sum(counts[k] for k in REVIEW),
         "counts": {k: counts[k] for k in CHECKS},
         "sales_words": dict(sales_words),
         "findings": [{"check": c, "sentence": s, "match": m} for c, s, m in findings],
